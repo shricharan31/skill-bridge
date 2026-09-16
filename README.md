@@ -1,15 +1,28 @@
-# SkillBridge Full Project Source
+# SkillBridge Actual Code Content
 
-This archive contains the complete SkillBridge application source: React frontend, Express/tRPC backend, MySQL/Drizzle schema and migrations, SAIL recommendation engine, Python SQLite-to-MySQL importer, tests, Dockerfile, and project configuration.
+This archive contains the actual source code from the requested directories, preserved in the languages used by the application.
 
-## Requirements
+## Directory language map
 
-- Node.js 22 or newer
-- pnpm 10 or newer
-- Python 3.9 or newer for the catalogue importer
-- MySQL or TiDB for the application database
+| Directory | Language | Contents |
+|---|---|---|
+| `client/` | React + TypeScript + CSS | Complete browser interface, pages, SAIL chat UI, manager portal, learner dashboard, and UI components. |
+| `server/` | TypeScript + Node.js | Express/tRPC backend, database helpers, authentication procedures, SAIL recommendation engine, storage, and tests. |
+| `shared/` | TypeScript | Shared constants and types used by frontend and backend. |
+| `drizzle/` | TypeScript + SQL | MySQL schema, relations, and generated database migrations. |
+| `scripts/` | Python | SQLite-to-MySQL catalogue migration utility using `mysql-connector-python`. |
 
-## Install and run
+## Why the files are not all Python
+
+The client is a browser application. React, TypeScript, CSS, and Vite are required for the existing interface and cannot be directly converted into Python without rebuilding it as a different framework such as Flask, Django, or Streamlit.
+
+The backend is already written in TypeScript/Node.js because it uses Express, tRPC, Drizzle ORM, and the Manus runtime. The database migrations are SQL and TypeScript because they are executed through Drizzle.
+
+The Python portion is the catalogue importer in `scripts/import_sqlite_to_mysql.py`. It can run independently in IDLE after installing `mysql-connector-python`.
+
+## Run the original project
+
+From the project root:
 
 ```bash
 pnpm install
@@ -18,31 +31,11 @@ pnpm test
 pnpm dev
 ```
 
-The application uses environment variables supplied by the deployment runtime. For a local setup, copy `.env.example` to `.env` and fill in the required values. Never commit real credentials.
-
-## Database
-
-The application schema is in `drizzle/schema.ts`; SQL migrations are in `drizzle/*.sql`. The Python utility in `scripts/import_sqlite_to_mysql.py` imports the supplied SkillBridge SQLite catalogue into MySQL. Install its dependency with:
+## Run the Python script
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+pip install mysql-connector-python
 python scripts/import_sqlite_to_mysql.py /path/to/SkillBridge_Core.db
 ```
 
-## Main source areas
-
-| Directory/file | Purpose |
-|---|---|
-| `client/` | React interface, pages, UI components, styling, and browser bootstrap. |
-| `server/` | tRPC procedures, database helpers, SAIL engine, auth, and tests. |
-| `shared/` | Shared constants and types. |
-| `drizzle/` | MySQL schema, relations, and migrations. |
-| `scripts/` | Python catalogue migration utility. |
-| `Dockerfile` | Node plus Python deployment image. |
-| `SKILLBRIDGE_HACKATHON_PITCH.md` | Implementation and hackathon presentation guide. |
-
-## Important note
-
-This is source code, not a standalone export of runtime secrets, database contents, OAuth credentials, or generated `node_modules`/`dist` files. Configure those separately in the target environment.
+The Python script expects a `DATABASE_URL` environment variable containing a MySQL connection URL.
